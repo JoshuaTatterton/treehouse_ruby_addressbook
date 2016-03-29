@@ -23,15 +23,51 @@ class Contact
     full_name += last_name
     full_name
   end
+  
+  def last_first
+    last_first = last_name
+    last_first += ", "
+    last_first += first_name
+    if !@middle_name.nil?
+      last_first += " "
+      last_first += middle_name.slice(0,1)
+      last_first += "."
+    end
+    last_first
+  end
+  
+  def first_last
+    first_last = first_name
+    first_last += " "
+    first_last += last_name
+  end
+  
+  def to_s(format = "full_name")
+    case format
+      when "full_name"
+        full_name
+      when "last_first"
+        last_first
+      when "first"
+        "first_name"
+      when "last"
+        last_name
+      else "first_last"
+        first_last
+    end
+  end
+  
 end
 
 jason = Contact.new
 jason.first_name = "Jason"
 jason.last_name = "Seifer"
-puts jason.full_name
+puts jason.to_s
+puts jason.to_s("full_name")
+puts jason.to_s("last_first")
 
 nick = Contact.new
 nick.first_name = "Nick"
 nick.middle_name = "A"
 nick.last_name = "Pettit"
-puts nick.full_name
+puts nick.to_s("first_last")
