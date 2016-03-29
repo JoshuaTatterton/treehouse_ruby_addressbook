@@ -26,6 +26,7 @@ class AddressBook
 		loop do
 			puts "Address Book"
 			puts "a: Add Contact"
+			puts "d: Delete Contact"
 			puts "p: Print Address Book"
 			puts "s: Search"
 			puts "e: Exit"
@@ -34,6 +35,9 @@ class AddressBook
 			case input
 			when "a"
 				add_contact
+			when "d"
+				print "Contact name to delete (First name + Last name): "
+				delete_contact_by_name(gets.chomp)
 			when "p"
 				print_contact_list
 			when "s"
@@ -93,6 +97,22 @@ class AddressBook
 			end
 		end
 		contacts.push(contact)
+	end
+
+	def delete_contact_by_name(name)
+		result = ""
+		search = name
+		contacts.each do |contact|
+			if contact.first_last.downcase == search.downcase
+				result = contact
+			end
+		end
+		if result == ""
+			puts "#{search} did not match a contact"
+		else
+			contacts.delete(result)
+			puts "#{search} deleted from address book"
+		end
 	end
 
 	def print_results(search, results)
