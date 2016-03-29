@@ -1,4 +1,5 @@
 class Address
+
 	attr_accessor :kind, :street_1, :street_2, :city, :state, :postal_code
 
 	def to_s(format = "short")
@@ -17,14 +18,5 @@ class Address
 			address += ", #{city}, #{state}, #{postal_code}"
 		end
 	end
-end
-home = Address.new
-home.kind = "Home"
-home.street_1 = "123 Main St."
-home.city = "Portland"
-home.state = "OR"
-home.postal_code = "12345"
 
-puts home.to_s("short")
-puts "\n"
-puts home.to_s("long")
+end
