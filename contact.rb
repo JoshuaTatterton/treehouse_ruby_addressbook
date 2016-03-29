@@ -95,4 +95,3 @@ class Contact
     addresses.each { |address| puts address.to_s("short") }
   end
 end
-
