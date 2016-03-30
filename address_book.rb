@@ -22,8 +22,7 @@ class AddressBook
 
 	def run
 		loop do
-			print "\n"
-			puts "Address Book"
+			puts "\nAddress Book"
 			puts "a: Add Contact"
 			puts "d: Delete Contact"
 			puts "e: Edit Contact"
@@ -37,15 +36,15 @@ class AddressBook
 			when "a"
 				add_contact
 			when "d"
-				print "Contact name to delete (First + Last name): "
+				print "\nContact name to delete (First + Last name): "
 				delete_contact_by_name(gets.chomp)
 			when "e"
-				print "Contact name to edit (First + Last name): "
+				print "\nContact name to edit (First + Last name): "
 				edit_contact_by_name(gets.chomp)
 			when "p"
 				print_contact_list
 			when "s"
-				print "Search term: "
+				print "\nSearch term: "
 				search_contacts(gets.chomp)
 			when "q"
 				save
@@ -56,18 +55,22 @@ class AddressBook
 
 	def add_contact
 		contact = Contact.new
-		print "First name: "
-		contact.first_name = gets.chomp
-		print "Middle name: "
-		contact.middle_name = gets.chomp
-		print "Last name: "
-		contact.last_name = gets.chomp
-
+		loop do
+			print "\nFirst name: "
+			contact.first_name = gets.chomp
+			print "Middle name: "
+			contact.middle_name = gets.chomp
+			print "Last name: "
+			contact.last_name = gets.chomp
+			break if !(all_first_last_names.include?(contact.first_last.downcase))
+			puts "#{contact.first_last} already exists in address book please reenter name"
+		end
 		loop do
 			puts "Add phone number or address"
 			puts "p: Add phone number"
 			puts "a: Add address"
 			puts "(any other key to go back)"
+			print "Enter your choice: "
 			input = gets.chomp.downcase
 			case input
 			when "p"
@@ -89,8 +92,17 @@ class AddressBook
 
 	def add_phone_number_to_contact(contact)
 		phone = PhoneNumber.new
-		print "Phone number kind: "
+		print "\nPhone number kind: "
 		phone.kind = gets.chomp
+		loop do
+			if contact.phone_number_kinds.include?(phone.kind.downcase)
+				puts "Phone number kind already in use"
+				print "Please enter a different phone number kind: "
+				phone.kind = gets.chomp
+			else
+				break
+			end
+		end
 		print "Number: "
 		phone.number = gets.chomp
 		contact.phone_numbers.push(phone)
@@ -98,8 +110,17 @@ class AddressBook
 
 	def add_address_to_contact(contact)
 		address = Address.new
-		print "Address kind: "
+		print "\nAddress kind: "
 		address.kind = gets.chomp
+		loop do
+			if contact.address_kinds.include?(address.kind.downcase)
+				puts "Address kind already in use"
+				print "Please enter a different address kind: "
+				address.kind = gets.chomp
+			else
+				break
+			end
+		end
 		print "Address line 1: "
 		address.street_1 = gets.chomp
 		print "Address line 2: "
@@ -136,14 +157,15 @@ class AddressBook
 			end
 		end
 		if result.nil?
-			puts "#{search} did not match a contact"
+			puts "\n#{search} did not match a contact"
 		else
 			loop do
-				puts "Select information to change"
+				puts "\nSelect information to change"
 				puts "n: Name"
 				puts "a: Addresses"
 				puts "p: Phone Numbers"
 				puts "(any other key to go back)"
+				print "Enter your choice: "
 				input = gets.chomp
 				case input
 				when "n"
@@ -161,11 +183,12 @@ class AddressBook
 
 	def edit_contact_name(contact)
 		loop do
-			puts "Select name to change"
+			puts "\nSelect name to change"
 			puts "f: First Name (Current - #{contact.first_name})"
 			puts "m: Middle Name (Current - #{contact.middle_name})"
 			puts "l: Last Name (Current - #{contact.last_name}"
 			puts "(any other key to go back)"
+			print "Enter your choice: "
 			input = gets.chomp
 			case input
 			when "f"
@@ -185,11 +208,13 @@ class AddressBook
 
 	def edit_contact_addresses(contact)
 		loop do
-			puts "Select option"
+			puts "\nSelect option"
 			puts "a: Add new address"
 			puts "e: Edit existing address"
 			puts "d: Delete existing address"
+			puts "p: Display all addresses"
 			puts "(any other key to go back)"
+			print "Enter your choice: "
 			input = gets.chomp
 			case input
 			when "a"
@@ -198,6 +223,8 @@ class AddressBook
 				delete_address_from_contact(contact)
 			when "e"
 				edit_address_in_contact(contact)
+			when "p"
+				print_contacts_addresses(contact)
 			else
 				break
 			end
@@ -205,7 +232,7 @@ class AddressBook
 	end
 
 	def delete_address_from_contact(contact)
-		print "Enter the kind of address you wish to delete: "
+		print "\nEnter the kind of address you wish to delete: "
 		input = gets.chomp
 		found = false
 		contact.addresses.each do |address|
@@ -219,7 +246,7 @@ class AddressBook
 	end
 
 	def edit_address_in_contact(contact)
-		print "Enter the kind of address you wish to edit: "
+		print "\nEnter the kind of address you wish to edit: "
 		input = gets.chomp
 		found = false
 		contact.addresses.each do |address|
@@ -233,7 +260,7 @@ class AddressBook
 
 	def edit_address(address)
 		loop do
-			puts "Select the address information to change"
+			puts "\nSelect the address information to change"
 			puts "k: Address Kind (Current - #{address.kind})"
 			puts "a1: Address line 1 (Current - #{address.street_1})"
 			puts "a2: Address line 2 (Current - #{address.street_2})"
@@ -241,10 +268,11 @@ class AddressBook
 			puts "c: County (Current - #{address.county})"
 			puts "p: Post Code (Current - #{address.post_code})"
 			puts "(any other key to go back)"	
+			print "Enter your choice: "
 			input = gets.chomp
 			case input
 			when "k"
-				print "Enter new address kind: "
+				print "\nEnter new address kind: "
 				address.kind = gets.chomp
 			when "a1"
 				print "Enter new address line 1: "
@@ -267,13 +295,22 @@ class AddressBook
 		end
 	end
 
+	def print_contacts_addresses(contact)
+		puts "\nAddresses"
+		contact.addresses.each do |address|
+			puts address.print_address 
+		end
+	end
+
 	def edit_contact_numbers(contact)
 		loop do
-			puts "Select option"
+			puts "\nSelect option"
 			puts "a: Add new phone number"
 			puts "e: Edit existing phone number"
 			puts "d: Delete existing phone number"
+			puts "p: Print all phone numbers"
 			puts "(any other key to go back)"
+			print "Enter your choice: "
 			input = gets.chomp
 			case input
 			when "a"
@@ -282,6 +319,8 @@ class AddressBook
 				delete_phone_number_from_contact(contact)
 			when "e"
 				edit_phone_number_in_contact(contact)
+			when "p"
+				print_contacts_phone_numbers(contact)
 			else
 				break
 			end
@@ -289,7 +328,7 @@ class AddressBook
 	end
 
 	def delete_phone_number_from_contact(contact)
-		print "Enter the kind of phone number you wish to delete: "
+		print "\nEnter the kind of phone number you wish to delete: "
 		input = gets.chomp
 		found = false
 		contact.phone_numbers.each do |phone_number|
@@ -303,7 +342,7 @@ class AddressBook
 	end
 
 	def edit_phone_number_in_contact(contact)
-		print "Enter the kind of phone number you wish to edit: "
+		print "\nEnter the kind of phone number you wish to edit: "
 		input = gets.chomp
 		found = false
 		contact.phone_numbers.each do |phone_number|
@@ -317,10 +356,11 @@ class AddressBook
 
 	def edit_phone_number(phone_number)
 		loop do
-			puts "Select the phone number information to change"
+			puts "\nSelect the phone number information to change"
 			puts "k: Phone Number Kind (Current - #{phone_number.kind})"
 			puts "n: Phone Number (Current - #{phone_number.number}"
 			puts "(any other key to go back)"
+			print "Enter your choice: "
 			input = gets.chomp
 			case input
 			when "k"
@@ -335,8 +375,15 @@ class AddressBook
 		end
 	end
 
+	def print_contacts_phone_numbers(contact)
+		puts "\nPhone Numbers"
+		contact.phone_numbers.each do |phone_number|
+			puts phone_number.print_number 
+		end
+	end
+
 	def print_results(search, results)
-		puts search
+		puts "\n" + search
 		results.each do |contact|
 			puts contact.print_name
 			contact.print_phone_numbers
@@ -380,9 +427,15 @@ class AddressBook
 	end
 
 	def print_contact_list
-		puts "Contact List"
+		puts "\nContact List"
 		contacts.each { |contact| puts contact.print_name("last_first") }
 	end
+
+	def all_first_last_names
+    contacts.inject([]) do |result_memo, contact|
+      result_memo << contact.first_last.downcase
+    end
+  end
 
 end
 

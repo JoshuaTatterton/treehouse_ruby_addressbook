@@ -56,7 +56,7 @@ class Contact
     last_first = last_name
     last_first += ", "
     last_first += first_name
-    if !@middle_name.nil?
+    if !(@middle_name == "")
       last_first += " "
       last_first += middle_name.slice(0,1)
       last_first += "."
@@ -94,4 +94,17 @@ class Contact
     puts "Addresses"
     addresses.each { |address| puts address.print_address }
   end
+
+  def address_kinds
+    addresses.inject([]) do |result_memo, address|
+      result_memo << address.kind.downcase
+    end
+  end
+
+  def phone_number_kinds
+    phone_numbers.inject([]) do |result_memo, phone_number|
+      result_memo << phone_number.kind.downcase
+    end
+  end
+
 end
