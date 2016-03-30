@@ -11,9 +11,7 @@ class AddressBook
 	end
 
 	def open
-		if File.exists?("contacts.yml")
-			@contacts = YAML.load_file("contacts.yml")
-		end
+		@contacts = YAML.load_file("contacts.yml") if File.exists?("contacts.yml")
 	end
 
 	def save
@@ -34,23 +32,21 @@ class AddressBook
 			puts "q: Quit"
 			print "Enter your choice: "
 			input = gets.chomp.downcase
+
 			case input
 			when "a"
 				add_contact
 			when "d"
-				print "Contact name to delete (First name + Last name): "
+				print "Contact name to delete (First + Last name): "
 				delete_contact_by_name(gets.chomp)
 			when "e"
-				print "Contact name to edit (First name + Last name): "
+				print "Contact name to edit (First + Last name): "
 				edit_contact_by_name(gets.chomp)
 			when "p"
 				print_contact_list
 			when "s"
 				print "Search term: "
-				search = gets.chomp
-				find_by_name(search)
-				find_by_address(search)
-				find_by_phone_number(search)
+				search_contacts(gets.chomp)
 			when "q"
 				save
 				break
@@ -72,41 +68,53 @@ class AddressBook
 			puts "p: Add phone number"
 			puts "a: Add address"
 			puts "(any other key to go back)"
-			responce = gets.chomp.downcase
-			case responce
+			input = gets.chomp.downcase
+			case input
 			when "p"
-				phone = PhoneNumber.new
-				print "Phone number kind: "
-				phone.kind = gets.chomp
-				print "Number: "
-				phone.number = gets.chomp
-				contact.phone_numbers.push(phone)
+				add_phone_number_to_contact(contact)
 			when "a"
-				address = Address.new
-				print "Address kind: "
-				address.kind = gets.chomp
-				print "Address line 1: "
-				address.street_1 = gets.chomp
-				print "Address line 2: "
-				address.street_2 = gets.chomp
-				print "City: "
-				address.city = gets.chomp
-				print "State: "
-				address.city = gets.chomp
-				print "Postal code; "
-				address.postal_code = gets.chomp
-				contact.addresses.push(address)
+				add_address_to_contact(contact)
 			else
-				print "\n"
 				break
 			end
 		end
 		contacts.push(contact)
 	end
 
-	def delete_contact_by_name(query)
+	def search_contacts(search)
+		find_by_name(search)
+		find_by_address(search)
+		find_by_phone_number(search)
+	end
+
+	def add_phone_number_to_contact(contact)
+		phone = PhoneNumber.new
+		print "Phone number kind: "
+		phone.kind = gets.chomp
+		print "Number: "
+		phone.number = gets.chomp
+		contact.phone_numbers.push(phone)
+	end
+
+	def add_address_to_contact(contact)
+		address = Address.new
+		print "Address kind: "
+		address.kind = gets.chomp
+		print "Address line 1: "
+		address.street_1 = gets.chomp
+		print "Address line 2: "
+		address.street_2 = gets.chomp
+		print "City: "
+		address.city = gets.chomp
+		print "State: "
+		address.city = gets.chomp
+		print "Postal code: "
+		address.postal_code = gets.chomp
+		contact.addresses.push(address)
+	end
+
+	def delete_contact_by_name(search)
 		result = nil
-		search = query
 		contacts.each do |contact|
 			if contact.first_last.downcase == search.downcase
 				result = contact
@@ -120,9 +128,8 @@ class AddressBook
 		end
 	end
 
-	def edit_contact_by_name(query)
+	def edit_contact_by_name(search)
 		result = nil
-		search = query
 		contacts.each do |contact|
 			if contact.first_last.downcase == search.downcase
 				result = contact
@@ -136,6 +143,7 @@ class AddressBook
 				puts "n: Name"
 				# puts "a: Addresses"
 				# puts "p: Phone Numbers"
+				puts "(any other key to go back)"
 				input = gets.chomp
 				case input
 				when "n"
@@ -183,53 +191,51 @@ class AddressBook
 	def print_results(search, results)
 		puts search
 		results.each do |contact|
-			puts contact.to_s("full_name")
+			puts contact.print_name
 			contact.print_phone_numbers
 			contact.print_addresses
 			puts "\n"
 		end
 	end
 
-	def find_by_name(name)
-		results = []
-		search = name.downcase
-		contacts.each do |contact|
-			if contact.full_name.downcase.include?(search)
-				results.push(contact)
+	def find_by_name(search)
+		results = contacts.inject([]) do |result_memo, contact|
+			if contact.full_name.downcase.include?(search.downcase)
+				result_memo << contact
 			end
+			result_memo
 		end
 		print_results("Name search results (#{search})", results)
 	end
 
 	def find_by_phone_number(number)
-		results = []
 		search = number.gsub("-", "")
-		contacts.each do |contact|
+		results = contacts.inject([]) do |result_memo, contact|
 			contact.phone_numbers.each do |phone_number|
 				if phone_number.number.gsub("-", "").include?(search)
-					results.push(contact) unless results.include?(contact)
+					result_memo << contact unless result_memo.include?(contact)
 				end
 			end
+			result_memo
 		end
 		print_results("Phone search results (#{search})", results)
 	end
 
-	def find_by_address(query)
-		results = []
-		search = query.downcase
-		contacts.each do |contact|
+	def find_by_address(search)
+		results = contacts.inject([]) do |result_memo, contact|
 			contact.addresses.each do |address|
-				if address.to_s("long").downcase.include?(query)
-					results.push(contact) unless results.include?(contact)
+				if address.print_address("long").downcase.include?(search.downcase)
+					result_memo << contact unless result_memo.include?(contact)
 				end
 			end
+			result_memo
 		end
-		print_results("Address search results (#{query})", results)
+		print_results("Address search results (#{search})", results)
 	end
 
 	def print_contact_list
 		puts "Contact List"
-		contacts.each { |contact| puts contact.to_s("last_first") }
+		contacts.each { |contact| puts contact.print_name("last_first") }
 	end
 
 end

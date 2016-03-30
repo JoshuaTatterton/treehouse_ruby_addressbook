@@ -2,7 +2,7 @@ class PhoneNumber
 
 	attr_accessor :kind, :number
 
-	def to_s
+	def print_number
 		"#{kind}: #{number}"
 	end
 

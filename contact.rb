@@ -70,7 +70,7 @@ class Contact
     first_last += last_name
   end
   
-  def to_s(format = "full_name")
+  def print_name(format = "full_name")
     case format
       when "full_name"
         full_name
@@ -87,11 +87,11 @@ class Contact
 
   def print_phone_numbers
     puts "Phone Numbers"
-    phone_numbers.each { |number| puts number }
+    phone_numbers.each { |number| puts number.print_number }
   end
   
   def print_addresses
     puts "Addresses"
-    addresses.each { |address| puts address.to_s("short") }
+    addresses.each { |address| puts address.print_address }
   end
 end

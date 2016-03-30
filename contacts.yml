@@ -1,0 +1,16 @@
+---
+- !ruby/object:Contact
+  phone_numbers:
+  - !ruby/object:PhoneNumber
+    kind: Home
+    number: '12345690'
+  addresses:
+  - !ruby/object:Address
+    kind: HOme
+    street_1: 68 More Parks
+    street_2: ''
+    city: West York
+    postal_code: WF13 8HB
+  first_name: Josh
+  middle_name: Kee
+  last_name: Tatts
