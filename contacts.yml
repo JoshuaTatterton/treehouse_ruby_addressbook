@@ -4,6 +4,9 @@
   - !ruby/object:PhoneNumber
     kind: Home
     number: '12345690'
+  - !ruby/object:PhoneNumber
+    kind: work
+    number: '6789054321'
   addresses:
   - !ruby/object:Address
     kind: HOme

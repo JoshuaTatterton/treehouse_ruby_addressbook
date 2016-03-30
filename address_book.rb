@@ -142,7 +142,7 @@ class AddressBook
 				puts "Select information to change"
 				puts "n: Name"
 				puts "a: Addresses"
-				# puts "p: Phone Numbers"
+				puts "p: Phone Numbers"
 				puts "(any other key to go back)"
 				input = gets.chomp
 				case input
@@ -150,8 +150,8 @@ class AddressBook
 					edit_contact_name(result)
 				when "a"
 					edit_contact_addresses(result)
-				# when "p"
-				# 	edit_contact_numbers(result)
+				when "p"
+					edit_contact_numbers(result)
 				else
 					break
 				end
@@ -207,12 +207,15 @@ class AddressBook
 	def delete_address_from_contact(contact)
 		print "Enter the kind of address you wish to delete: "
 		input = gets.chomp
+		found = false
 		contact.addresses.each do |address|
 			if address.kind.downcase == input.downcase
 				contact.addresses.delete(address) 
-				puts "#{address.kind} Deleted"
+				puts "#{address.kind} Address Deleted"
+				found = true
 			end
 		end
+		puts "'#{input}' Address kind not found" if !found
 	end
 
 	def edit_address_in_contact(contact)
@@ -239,19 +242,24 @@ class AddressBook
 			puts "p: Post Code (Current - #{address.post_code})"
 			puts "(any other key to go back)"	
 			input = gets.chomp
-			print "Enter new address information: "
 			case input
 			when "k"
+				print "Enter new address kind: "
 				address.kind = gets.chomp
 			when "a1"
+				print "Enter new address line 1: "
 				address.street_1 = gets.chomp
 			when "a2"
+				print "Enter new address line 2: "
 				address.street_2 = gets.chomp
 			when "t"
+				print "Enter new address town/city: "
 				address.city = gets.chomp
 			when "c"
+				print "Enter new address county: "
 				address.county = gets.chomp
 			when "p"
+				print "Enter new address post code: "
 				address.post_code = gets.chomp
 			else
 				break
@@ -260,6 +268,71 @@ class AddressBook
 	end
 
 	def edit_contact_numbers(contact)
+		loop do
+			puts "Select option"
+			puts "a: Add new phone number"
+			puts "e: Edit existing phone number"
+			puts "d: Delete existing phone number"
+			puts "(any other key to go back)"
+			input = gets.chomp
+			case input
+			when "a"
+				add_phone_number_to_contact(contact)
+			when "d"
+				delete_phone_number_from_contact(contact)
+			when "e"
+				edit_phone_number_in_contact(contact)
+			else
+				break
+			end
+		end
+	end
+
+	def delete_phone_number_from_contact(contact)
+		print "Enter the kind of phone number you wish to delete: "
+		input = gets.chomp
+		found = false
+		contact.phone_numbers.each do |phone_number|
+			if phone_number.kind.downcase == input.downcase
+				contact.phone_numbers.delete(phone_number) 
+				puts "#{phone_number.kind} Phone Number Deleted"
+				found = true
+			end
+		end
+		puts "'#{input}' Phone number kind not found" if !found
+	end
+
+	def edit_phone_number_in_contact(contact)
+		print "Enter the kind of phone number you wish to edit: "
+		input = gets.chomp
+		found = false
+		contact.phone_numbers.each do |phone_number|
+			if phone_number.kind.downcase == input.downcase
+				edit_phone_number(phone_number)
+				found = true
+			end
+		end
+		puts "'#{input}' Phone number kind not found" if !found
+	end
+
+	def edit_phone_number(phone_number)
+		loop do
+			puts "Select the phone number information to change"
+			puts "k: Phone Number Kind (Current - #{phone_number.kind})"
+			puts "n: Phone Number (Current - #{phone_number.number}"
+			puts "(any other key to go back)"
+			input = gets.chomp
+			case input
+			when "k"
+				print "Enter new phone number kind: "
+				phone_number.kind = gets.chomp
+			when "n"
+				print "Enter new phone number: "
+				phone_number.number = gets.chomp
+			else 
+				break
+			end
+		end
 	end
 
 	def print_results(search, results)
@@ -268,7 +341,6 @@ class AddressBook
 			puts contact.print_name
 			contact.print_phone_numbers
 			contact.print_addresses
-			puts "\n"
 		end
 	end
 
@@ -283,10 +355,10 @@ class AddressBook
 	end
 
 	def find_by_phone_number(number)
-		search = number.gsub("-", "")
+		search = number.gsub(" ", "")
 		results = contacts.inject([]) do |result_memo, contact|
 			contact.phone_numbers.each do |phone_number|
-				if phone_number.number.gsub("-", "").include?(search)
+				if phone_number.number.gsub(" ", "").include?(search)
 					result_memo << contact unless result_memo.include?(contact)
 				end
 			end
