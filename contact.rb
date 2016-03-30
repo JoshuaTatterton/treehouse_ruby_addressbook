@@ -18,14 +18,14 @@ class Contact
     phone_numbers.push(phone_number)
   end
 
-  def add_address(kind, street_1, street_2, city, state, postal_code)
+  def add_address(kind, street_1, street_2, city, county, post_code)
     address = Address.new
     address.kind = kind
     address.street_1 = street_1
     address.street_2 = street_2
     address.city = city
-    address.state = state 
-    address.postal_code = postal_code
+    address.county = county 
+    address.post_code = post_code
     addresses.push(address)
   end
 

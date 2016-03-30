@@ -104,12 +104,12 @@ class AddressBook
 		address.street_1 = gets.chomp
 		print "Address line 2: "
 		address.street_2 = gets.chomp
-		print "City: "
+		print "Town/City: "
 		address.city = gets.chomp
-		print "State: "
-		address.city = gets.chomp
-		print "Postal code: "
-		address.postal_code = gets.chomp
+		print "County: "
+		address.county = gets.chomp
+		print "Post Code: "
+		address.post_code = gets.chomp
 		contact.addresses.push(address)
 	end
 
@@ -141,15 +141,15 @@ class AddressBook
 			loop do
 				puts "Select information to change"
 				puts "n: Name"
-				# puts "a: Addresses"
+				puts "a: Addresses"
 				# puts "p: Phone Numbers"
 				puts "(any other key to go back)"
 				input = gets.chomp
 				case input
 				when "n"
 					edit_contact_name(result)
-				# when "a"
-				# 	edit_contact_addresses(result)
+				when "a"
+					edit_contact_addresses(result)
 				# when "p"
 				# 	edit_contact_numbers(result)
 				else
@@ -165,6 +165,7 @@ class AddressBook
 			puts "f: First Name (Current - #{contact.first_name})"
 			puts "m: Middle Name (Current - #{contact.middle_name})"
 			puts "l: Last Name (Current - #{contact.last_name}"
+			puts "(any other key to go back)"
 			input = gets.chomp
 			case input
 			when "f"
@@ -183,9 +184,82 @@ class AddressBook
 	end
 
 	def edit_contact_addresses(contact)
+		loop do
+			puts "Select option"
+			puts "a: Add new address"
+			puts "e: Edit existing address"
+			puts "d: Delete existing address"
+			puts "(any other key to go back)"
+			input = gets.chomp
+			case input
+			when "a"
+				add_address_to_contact(contact)
+			when "d"
+				delete_address_from_contact(contact)
+			when "e"
+				edit_address_in_contact(contact)
+			else
+				break
+			end
+		end
 	end
 
-	def edit_contact_number(contact)
+	def delete_address_from_contact(contact)
+		print "Enter the kind of address you wish to delete: "
+		input = gets.chomp
+		contact.addresses.each do |address|
+			if address.kind.downcase == input.downcase
+				contact.addresses.delete(address) 
+				puts "#{address.kind} Deleted"
+			end
+		end
+	end
+
+	def edit_address_in_contact(contact)
+		print "Enter the kind of address you wish to edit: "
+		input = gets.chomp
+		found = false
+		contact.addresses.each do |address|
+			if address.kind.downcase == input.downcase
+				edit_address(address)
+				found = true
+			end
+		end
+		puts "'#{input}' Address kind not found" if !found
+	end
+
+	def edit_address(address)
+		loop do
+			puts "Select the address information to change"
+			puts "k: Address Kind (Current - #{address.kind})"
+			puts "a1: Address line 1 (Current - #{address.street_1})"
+			puts "a2: Address line 2 (Current - #{address.street_2})"
+			puts "t: Town/City (Current - #{address.city})"
+			puts "c: County (Current - #{address.county})"
+			puts "p: Post Code (Current - #{address.post_code})"
+			puts "(any other key to go back)"	
+			input = gets.chomp
+			print "Enter new address information: "
+			case input
+			when "k"
+				address.kind = gets.chomp
+			when "a1"
+				address.street_1 = gets.chomp
+			when "a2"
+				address.street_2 = gets.chomp
+			when "t"
+				address.city = gets.chomp
+			when "c"
+				address.county = gets.chomp
+			when "p"
+				address.post_code = gets.chomp
+			else
+				break
+			end
+		end
+	end
+
+	def edit_contact_numbers(contact)
 	end
 
 	def print_results(search, results)
